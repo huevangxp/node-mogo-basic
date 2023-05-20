@@ -54,7 +54,7 @@ exports.update = async (req, res) => {
         if (!user) {
             return res.status(404).json({ message: "id not found!" })
         }
-        const users = await User.findOneAndUpdate({
+         await User.findOneAndUpdate({
             name,
             lastname,
             phone,
