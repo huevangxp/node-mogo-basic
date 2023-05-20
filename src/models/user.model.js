@@ -5,7 +5,11 @@ const userSchima = new mongoose.Schema({
     lastname: String,
     phone: String,
     password:String,
-})
+},
+    {
+        timestamps:true
+    }
+)
 
 const User = mongoose.model('User', userSchima)
 
