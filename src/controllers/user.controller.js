@@ -68,11 +68,18 @@ exports.update = async (req, res) => {
 
 exports.register = async (req, res) => {
     try {
-        const { name, lastname, phone, password } = req.body;
+        const { username, phone, password } = req.body;
+
+        const phoneCheck = await User.findOne({ phone: phone });
+
+        if (phoneCheck) {
+            return res.status(404).json({message: 'Phone number is already registered'})
+        }
+
         const newPass = await bcrypt.hash(password, 10);
+
         const user = new User({
-            name,
-            lastname,
+            username,
             phone,
             password: newPass
         })
@@ -86,10 +93,13 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
     try {
         const { phone, password } = req.body;
+        console.log(phone, password);
         const user = await User.findOne({ phone: phone })
+        console.log('3');
         if (!user) {
-            return res.status(404).json({message:'phone number not found'});
+            return res.status(404).json({ message: 'phone number not found' });
         }
+        // console.log("object");
         const checkPass = await bcrypt.compare(password, user.password);
         if (!checkPass) {
             return res.status(404).json({message:'password incorrect'});
@@ -100,7 +110,7 @@ exports.login = async (req, res) => {
             phone: user.phone,
         }
         const token = await jwt.sign(users, 'myPrivateKey', {expiresIn:"120d"})
-        res.send(token)
+        res.status(200).json(token)
     } catch (error) {
         return res.status(500).json(error)
     }
